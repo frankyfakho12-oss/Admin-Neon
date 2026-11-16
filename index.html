@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Franky — Control Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #060913;
+            --bg-glass: rgba(15, 23, 42, 0.65);
+            --bg-card: rgba(17, 25, 45, 0.8);
+            --bg-input: rgba(9, 14, 26, 0.85);
+            --border-glass: rgba(56, 189, 248, 0.18);
+            --border-subtle: rgba(148, 163, 184, 0.12);
+            --cyan: #00F5FF;
+            --blue: #0EA5E9;
+            --purple: #8B5CF6;
+            --gold: #FACC15;
+            --green: #10B981;
+            --red: #F43F5E;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 24px 16px 60px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Background Glow */
+        body::before, body::after {
+            content: '';
+            position: fixed;
+            width: 420px;
+            height: 420px;
+            border-radius: 50%;
+            filter: blur(130px);
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.35;
+        }
+        body::before {
+            top: -120px;
+            left: -100px;
+            background: radial-gradient(circle, var(--blue), transparent 70%);
+        }
+        body::after {
+            bottom: -140px;
+            right: -100px;
+            background: radial-gradient(circle, var(--purple), transparent 70%);
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        /* ================= LOGIN SCREEN ================= */
+        .login-wrapper {
+            min-height: 85vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 400px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            padding: 36px 28px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 245, 255, 0.08);
+        }
+
+        .crown-badge {
+            width: 58px;
+            height: 58px;
+            margin: 0 auto 16px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(0, 245, 255, 0.1));
+            border: 1px solid rgba(0, 245, 255, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.7rem;
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.2);
+        }
+
+        .login-box h2 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #fff, var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+
+        .login-box p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 24px;
+        }
+
+        /* ================= HEADER ================= */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(18px);
+            border: 1px solid var(--border-glass);
+            padding: 20px 24px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--blue), var(--cyan));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: #05080F;
+            font-weight: 800;
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.35);
+        }
+
+        .brand h1 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .brand span {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            display: block;
+            margin-top: 2px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-pill {
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 7px 14px;
+            border-radius: 99px;
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--green);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pulse-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 8px var(--green);
+            animation: pulse 1.8s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        /* ================= STATS BAR ================= */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 640px) { .stats-grid { grid-template-columns: 1fr; } }
+
+        .stat-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-subtle);
+            border-radius: 18px;
+            padding: 18px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+            opacity: 0.5;
+        }
+
+        .stat-title {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.45rem;
+            font-weight: 700;
+            margin-top: 6px;
+            color: #fff;
+        }
+
+        /* ================= CARDS & FORMS ================= */
+        .card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(18px);
+            border: 1px solid var(--border-subtle);
+            border-radius: 20px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1.1fr 1.1fr auto;
+            gap: 12px;
+            align-items: end;
+        }
+        @media (max-width: 720px) { .form-grid { grid-template-columns: 1fr; } }
+
+        .input-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        input {
+            background: var(--bg-input);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            color: var(--text-main);
+            padding: 11px 14px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            outline: none;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+
+        input:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 0 3px rgba(0, 245, 255, 0.12);
+        }
+
+        .mono-input {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.88rem;
+        }
+
+        /* ================= BUTTONS ================= */
+        button {
+            cursor: pointer;
+            border: none;
+            border-radius: 12px;
+            padding: 11px 16px;
+            font-weight: 700;
+            font-size: 0.84rem;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        button:active { transform: scale(0.97); }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--blue), var(--cyan));
+            color: #05080F;
+            box-shadow: 0 4px 15px rgba(0, 245, 255, 0.25);
+        }
+        .btn-primary:hover {
+            box-shadow: 0 6px 22px rgba(0, 245, 255, 0.45);
+            filter: brightness(1.05);
+        }
+
+        .btn-glass {
+            background: rgba(30, 41, 59, 0.7);
+            color: var(--text-main);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+        .btn-glass:hover {
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+
+        .btn-gold {
+            background: rgba(250, 204, 21, 0.12);
+            color: var(--gold);
+            border: 1px solid rgba(250, 204, 21, 0.35);
+        }
+        .btn-gold:hover { background: rgba(250, 204, 21, 0.22); }
+
+        .btn-save {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--green);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+        }
+        .btn-save:hover { background: rgba(16, 185, 129, 0.28); }
+
+        .btn-del {
+            background: rgba(244, 63, 94, 0.12);
+            color: var(--red);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            padding: 11px 13px;
+        }
+        .btn-del:hover { background: rgba(244, 63, 94, 0.25); }
+
+        /* ================= USER CARDS GRID ================= */
+        .user-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+        @media (max-width: 768px) { .user-grid { grid-template-columns: 1fr; } }
+
+        .user-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 16px;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+
+        .user-card:hover {
+            border-color: rgba(0, 245, 255, 0.35);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .user-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .user-identity {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            background: linear-gradient(135deg, #1E293B, #0F172A);
+            border: 1px solid rgba(0, 245, 255, 0.3);
+            color: var(--cyan);
+            font-weight: 800;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+        }
+
+        .user-name {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #fff;
+        }
+
+        .role-tag {
+            font-size: 0.68rem;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .role-admin { background: rgba(250, 204, 21, 0.15); color: var(--gold); border: 1px solid rgba(250, 204, 21, 0.3); }
+        .role-member { background: rgba(14, 165, 233, 0.15); color: var(--cyan); border: 1px solid rgba(14, 165, 233, 0.25); }
+
+        .progress-wrap {
+            margin-bottom: 14px;
+        }
+
+        .progress-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 6px;
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 99px;
+            transition: width 0.4s ease;
+        }
+
+        .edit-fields {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .card-actions button {
+            flex: 1;
+            padding: 9px 10px;
+            font-size: 0.8rem;
+        }
+
+        .card-actions .btn-del {
+            flex: 0 0 auto;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid var(--cyan);
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            z-index: 999;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN SCREEN -->
+    <div id="adminLogin" class="login-wrapper">
+        <div class="login-box">
+            <div class="crown-badge">👑</div>
+            <h2>Neon Franky Control</h2>
+            <p>Otorisasi Admin diperlukan untuk mengelola akun & kuota token AI</p>
+            <input type="password" id="adminMasterPass" placeholder="Masukkan PIN Admin..." style="margin-bottom:14px; text-align:center;" onkeydown="if(event.key==='Enter') verifyAdmin()">
+            <button class="btn-primary" style="width:100%;" onclick="verifyAdmin()">Buka Control Center →</button>
+            <p id="loginMsg" style="color:var(--red); font-size:0.8rem; margin-top:12px; margin-bottom:0;"></p>
+        </div>
+    </div>
+
+    <!-- DASHBOARD UTAMA -->
+    <div id="adminApp" class="container hidden">
+        <!-- Header -->
+        <div class="header">
+            <div class="brand">
+                <div class="brand-icon">NF</div>
+                <div>
+                    <h1>Neon Franky Control Center</h1>
+                    <span>Sinkronisasi Real-Time • frankyfakho.com</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div id="syncStatus" class="status-pill">
+                    <span class="pulse-dot"></span>
+                    <span id="syncText">Cloud Aktif</span>
+                </div>
+                <button class="btn-glass" onclick="loadFromCloud()">↻ Sync</button>
+            </div>
+        </div>
+
+        <!-- Ringkasan Statistik -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-title">Total Akun Aktif</div>
+                <div class="stat-value" id="statUsers">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Total Sisa Kuota</div>
+                <div class="stat-value" id="statRemaining" style="color:var(--cyan);">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Total Token Terpakai</div>
+                <div class="stat-value" id="statUsed" style="color:var(--gold);">0</div>
+            </div>
+        </div>
+
+        <!-- Form Buat Akun Baru -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">✨ Tambah Akun User Baru</div>
+                <button type="button" class="btn-gold" onclick="generateRandomUser()" style="padding:7px 12px; font-size:0.78rem;">
+                    🎲 Generate Otomatis
+                </button>
+            </div>
+            <div class="form-grid">
+                <div class="input-group">
+                    <label>Username Baru</label>
+                    <input type="text" id="newUsername" placeholder="misal: kevin99">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="text" id="newPassword" class="mono-input" placeholder="misal: pass123">
+                </div>
+                <div class="input-group">
+                    <label>Kuota Token Awal</label>
+                    <input type="number" id="newTokens" class="mono-input" value="400000" step="10000">
+                </div>
+                <button class="btn-primary" type="button" onclick="createUser()">+ Buat Akun</button>
+            </div>
+        </div>
+
+        <!-- Daftar & Edit Semua Akun -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">👥 Manajemen Akun & Kuota</div>
+                <button class="btn-gold" onclick="resetAllTo400K()" style="padding:7px 12px; font-size:0.78rem;">
+                    🔄 Reset Semua ke 400K
+                </button>
+            </div>
+            <div id="userList" class="user-grid"></div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast">✅ Tersimpan!</div>
+
+<script>
+    const JSONBIN_BIN_ID = '6afa9545ac6210605a8aee85';
+    const JSONBIN_MASTER_KEY = '$2a$10$U9tcSsMWrN7sORyjG0YXleEcBs3RC.dgn6zr3IGD6o5q3toJYg29C';
+    const ADMIN_PIN = '123';
+    const DEFAULT_QUOTA = 400000;
+
+    const DEFAULT_ACCOUNTS = {
+        franky:   { password: '123',    remainingTokens: 400000 },
+        sayangku: { password: '212',    remainingTokens: 400000 },
+        lesley:   { password: 'ml',     remainingTokens: 400000 },
+        mclaren:  { password: 'crypto', remainingTokens: 400000 },
+        neonvip:  { password: '2026',   remainingTokens: 400000 }
+    };
+
+    let accountsMap = {};
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.innerText = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2600);
+    }
+
+    function verifyAdmin() {
+        const input = document.getElementById('adminMasterPass').value.trim();
+        if (input === ADMIN_PIN) {
+            document.getElementById('adminLogin').classList.add('hidden');
+            document.getElementById('adminApp').classList.remove('hidden');
+            loadFromCloud();
+        } else {
+            document.getElementById('loginMsg').innerText = 'PIN Admin tidak valid!';
+        }
+    }
+
+    function setSyncStatus(label, isError = false) {
+        const textEl = document.getElementById('syncText');
+        const pillEl = document.getElementById('syncStatus');
+        textEl.innerText = label;
+        pillEl.style.color = isError ? '#F43F5E' : '#10B981';
+        pillEl.style.borderColor = isError ? 'rgba(244,63,94,0.35)' : 'rgba(16,185,129,0.3)';
+    }
+
+    async function loadFromCloud() {
+        setSyncStatus('Menyinkronkan...');
+        try {
+            const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': JSONBIN_MASTER_KEY, 'X-Bin-Meta': 'false' }
+            });
+            const data = await res.json();
+            const normalized = {};
+
+            Object.keys(DEFAULT_ACCOUNTS).forEach(u => {
+                if (typeof data[u] === 'number') {
+                    normalized[u] = { password: DEFAULT_ACCOUNTS[u].password, remainingTokens: data[u] };
+                } else if (data[u] && typeof data[u] === 'object') {
+                    normalized[u] = data[u];
+                } else {
+                    normalized[u] = { ...DEFAULT_ACCOUNTS[u] };
+                }
+            });
+
+            Object.keys(data || {}).forEach(u => {
+                if (!normalized[u] && data[u] && typeof data[u] === 'object') {
+                    normalized[u] = data[u];
+                }
+            });
+
+            accountsMap = normalized;
+            renderDashboard();
+            setSyncStatus('Cloud Aktif');
+        } catch (e) {
+            setSyncStatus('Gagal Konek', true);
+        }
+    }
+
+    async function pushToCloud(toastMsg = '✅ Perubahan tersimpan ke Cloud!') {
+        setSyncStatus('Menyimpan...');
+        try {
+            const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': JSONBIN_MASTER_KEY
+                },
+                body: JSON.stringify(accountsMap)
+            });
+            if (!res.ok) throw new Error();
+            renderDashboard();
+            setSyncStatus('Cloud Aktif');
+            showToast(toastMsg);
+        } catch (e) {
+            setSyncStatus('Error Simpan', true);
+            showToast('❌ Gagal menyimpan ke server');
+        }
+    }
+
+    function generateRandomUser() {
+        const prefixes = ['vip', 'neon', 'pro', 'cyber', 'user'];
+        const pick = prefixes[Math.floor(Math.random() * prefixes.length)];
+        const num = Math.floor(100 + Math.random() * 899);
+        const pass = Math.random().toString(36).slice(-6);
+
+        document.getElementById('newUsername').value = `${pick}${num}`;
+        document.getElementById('newPassword').value = pass;
+        document.getElementById('newTokens').value = DEFAULT_QUOTA;
+        showToast('🎲 Username & password otomatis dibuat!');
+    }
+
+    async function createUser() {
+        const username = document.getElementById('newUsername').value.trim().toLowerCase().replace(/\s+/g, '');
+        const password = document.getElementById('newPassword').value.trim();
+        const tokens = parseInt(document.getElementById('newTokens').value, 10) || 0;
+
+        if (!username || !password) return showToast('⚠️ Isi username & password dulu!');
+        if (accountsMap[username]) return showToast(`⚠️ Akun @${username} sudah ada!`);
+
+        accountsMap[username] = { password, remainingTokens: Math.max(0, tokens) };
+        document.getElementById('newUsername').value = '';
+        document.getElementById('newPassword').value = '';
+        await pushToCloud(`🎉 Akun @${username} berhasil dibuat!`);
+    }
+
+    async function saveUserRow(username) {
+        const newPass = document.getElementById(`pw_${username}`).value.trim();
+        const newTok = parseInt(document.getElementById(`tk_${username}`).value, 10);
+
+        if (!newPass) return showToast('⚠️ Password tidak boleh kosong!');
+        accountsMap[username].password = newPass;
+        accountsMap[username].remainingTokens = isNaN(newTok) ? 0 : Math.max(0, newTok);
+        await pushToCloud(`💾 Data @${username} diperbarui!`);
+    }
+
+    function copyAccountInfo(username) {
+        const pw = document.getElementById(`pw_${username}`).value;
+        const tk = parseInt(document.getElementById(`tk_${username}`).value, 10) || 0;
+        const text = `Login Neon Franky AI:\n🌐 Website: https://frankyfakho.com\n👤 Username: ${username}\n🔑 Password: ${pw}\n⚡ Kuota: ${tk.toLocaleString('id-ID')} token`;
+        navigator.clipboard.writeText(text);
+        showToast(`📋 Info login @${username} disalin!`);
+    }
+
+    async function deleteUser(username) {
+        if (username === 'franky') return showToast('⚠️ Akun utama tidak bisa dihapus');
+        if (!confirm(`Hapus permanen akun @${username}?`)) return;
+        delete accountsMap[username];
+        await pushToCloud(`🗑️ Akun @${username} dihapus`);
+    }
+
+    async function resetAllTo400K() {
+        if (!confirm('Reset kuota semua akun kembali ke 400.000 token?')) return;
+        Object.keys(accountsMap).forEach(u => accountsMap[u].remainingTokens = DEFAULT_QUOTA);
+        await pushToCloud('🔄 Semua akun di-reset ke 400.000 token!');
+    }
+
+    function renderDashboard() {
+        const keys = Object.keys(accountsMap);
+        let totalRem = 0;
+        let totalUsed = 0;
+
+        keys.forEach(u => {
+            const rem = Math.max(0, accountsMap[u].remainingTokens || 0);
+            totalRem += rem;
+            totalUsed += Math.max(0, DEFAULT_QUOTA - rem);
+        });
+
+        document.getElementById('statUsers').innerText = `${keys.length} Akun`;
+        document.getElementById('statRemaining').innerText = totalRem.toLocaleString('id-ID');
+        document.getElementById('statUsed').innerText = totalUsed.toLocaleString('id-ID');
+
+        const container = document.getElementById('userList');
+        container.innerHTML = keys.map(u => {
+            const item = accountsMap[u];
+            const rem = Math.max(0, item.remainingTokens);
+            const pct = Math.min(100, Math.round((rem / DEFAULT_QUOTA) * 100));
+            const barColor = pct <= 15 ? '#F43F5E' : (pct <= 40 ? '#FACC15' : '#00F5FF');
+            const isAdmin = u === 'franky';
+
+            return `
+                <div class="user-card">
+                    <div class="user-top">
+                        <div class="user-identity">
+                            <div class="user-avatar">${u.slice(0, 2)}</div>
+                            <div>
+                                <div class="user-name">@${u}</div>
+                            </div>
+                        </div>
+                        <span class="role-tag ${isAdmin ? 'role-admin' : 'role-member'}">
+                            ${isAdmin ? '👑 Owner' : '⚡ Member'}
+                        </span>
+                    </div>
+
+                    <div class="progress-wrap">
+                        <div class="progress-meta">
+                            <span>Sisa Kuota</span>
+                            <span style="color:${barColor}; font-weight:700;">${rem.toLocaleString('id-ID')} (${pct}%)</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width:${pct}%; background:${barColor}; box-shadow:0 0 10px ${barColor};"></div>
+                        </div>
+                    </div>
+
+                    <div class="edit-fields">
+                        <div class="input-group">
+                            <label>Password</label>
+                            <input type="text" id="pw_${u}" class="mono-input" value="${item.password}">
+                        </div>
+                        <div class="input-group">
+                            <label>Jumlah Token</label>
+                            <input type="number" id="tk_${u}" class="mono-input" value="${rem}" step="5000">
+                        </div>
+                    </div>
+
+                    <div class="card-actions">
+                        <button class="btn-save" onclick="saveUserRow('${u}')">💾 Simpan</button>
+                        <button class="btn-glass" onclick="copyAccountInfo('${u}')" title="Salin info login untuk dikirim">📋 Salin Login</button>
+                        ${!isAdmin ? `<button class="btn-del" onclick="deleteUser('${u}')" title="Hapus akun">🗑️</button>` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+</script>
+</body>
+</html>
